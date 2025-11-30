@@ -42,10 +42,10 @@ func (c Client) get(url string) []byte {
 	return body
 }
 
-func (c Client) GetAreLocation(url string) PokeLocationArea {
+func (c Client) GetAreLocation(url *string) PokeLocationArea {
 	startUrl := baseURL + "/location-area"
 	if url == nil {
-		url = startUrl
+		url = &startUrl
 	}
 
 	result := PokeLocationArea{}
