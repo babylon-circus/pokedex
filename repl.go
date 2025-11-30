@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	pokeapi "github.com/babylon-circus/pokedexcli/internal"
+	pokeapi "github.com/babylon-circus/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
