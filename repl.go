@@ -15,8 +15,7 @@ type config struct {
 	prevLocationsURL *string
 }
 
-func startRepl(c *config) {
-
+func startRepl(cfg *config) {
 	reader := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
@@ -31,7 +30,7 @@ func startRepl(c *config) {
 
 		command, exists := getCommands()[commandName]
 		if exists {
-			err := command.callback(c)
+			err := command.callback(cfg)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -62,20 +61,20 @@ func getCommands() map[string]cliCommand {
 			description: "Displays a help message",
 			callback:    commandHelp,
 		},
+		"map": {
+			name:        "map",
+			description: "Get the next page of locations",
+			callback:    commandMapf,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get the previous page of locations",
+			callback:    commandMapb,
+		},
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
-		},
-		"map": {
-			name:        "map",
-			description: "Fetches Poke API location areas",
-			callback:    commandMapF,
-		},
-		"mapb": {
-			name:        "map",
-			description: "Fetches Poke API location areas backword",
-			callback:    commandMapB,
 		},
 	}
 }

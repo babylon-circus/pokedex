@@ -5,31 +5,36 @@ import (
 	"fmt"
 )
 
-func commandMapF(c *config) error {
-
-	areaLocation := c.pokeapiClient.GetAreLocation(c.nextLocationsURL)
-	c.nextLocationsURL = areaLocation.Next
-	c.prevLocationsURL = areaLocation.Previous
-
-	for _, location := range areaLocation.Results {
-		fmt.Println(location.Name)
+func commandMapf(cfg *config) error {
+	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
+	if err != nil {
+		return err
 	}
 
+	cfg.nextLocationsURL = locationsResp.Next
+	cfg.prevLocationsURL = locationsResp.Previous
+
+	for _, loc := range locationsResp.Results {
+		fmt.Println(loc.Name)
+	}
 	return nil
 }
 
-func commandMapB(c *config) error {
-	if c.prevLocationsURL == nil {
+func commandMapb(cfg *config) error {
+	if cfg.prevLocationsURL == nil {
 		return errors.New("you're on the first page")
 	}
 
-	areaLocation := c.pokeapiClient.GetAreLocation(c.prevLocationsURL)
-	c.nextLocationsURL = areaLocation.Next
-	c.prevLocationsURL = areaLocation.Previous
-
-	for _, location := range areaLocation.Results {
-		fmt.Println(location.Name)
+	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.prevLocationsURL)
+	if err != nil {
+		return err
 	}
 
+	cfg.nextLocationsURL = locationResp.Next
+	cfg.prevLocationsURL = locationResp.Previous
+
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
+	}
 	return nil
 }
