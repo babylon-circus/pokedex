@@ -1,70 +1,61 @@
 package pokecache
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
 
-func TestCache(t *testing.T) {
-
-	cache := NewCache(1 * time.Second)
-
+func TestAddGet(t *testing.T) {
+	const interval = 5 * time.Second
 	cases := []struct {
-		input struct {
-			key string
-			val []byte
-		}
-		expected struct {
-			key string
-			val []byte
-		}
+		key string
+		val []byte
 	}{
 		{
-			input: struct {
-				key string
-				val []byte
-			}{key: "x", val: []byte("x")},
-			expected: struct {
-				key string
-				val []byte
-			}{key: "x", val: []byte("x")},
+			key: "https://example.com",
+			val: []byte("testdata"),
 		},
 		{
-			input: struct {
-				key string
-				val []byte
-			}{key: "", val: []byte("empty")},
-			expected: struct {
-				key string
-				val []byte
-			}{key: "", val: []byte("empty")},
-		},
-		{
-			input: struct {
-				key string
-				val []byte
-			}{key: "#$%%%%", val: []byte("some message")},
-			expected: struct {
-				key string
-				val []byte
-			}{key: "#$%%%%", val: []byte("some message")},
+			key: "https://example.com/path",
+			val: []byte("moretestdata"),
 		},
 	}
 
-	for _, testCase := range cases {
-		cache.Add(testCase.input.key, testCase.input.val)
-		acctual, _ := cache.Get(testCase.input.key)
+	for i, c := range cases {
+		t.Run(fmt.Sprintf("Test case %v", i), func(t *testing.T) {
+			cache := NewCache(interval)
+			cache.Add(c.key, c.val)
+			val, ok := cache.Get(c.key)
+			if !ok {
+				t.Errorf("expected to find key")
+				return
+			}
+			if string(val) != string(c.val) {
+				t.Errorf("expected to find value")
+				return
+			}
+		})
+	}
+}
 
-		if string(testCase.expected.val) != string(acctual) {
-			t.Errorf("input %s does not match cache value %s", testCase.input, string(acctual))
-		}
+func TestReapLoop(t *testing.T) {
+	const baseTime = 5 * time.Millisecond
+	const waitTime = baseTime + 5*time.Millisecond
+	cache := NewCache(baseTime)
+	cache.Add("https://example.com", []byte("testdata"))
 
-		time.Sleep(2 * time.Second)
-		_, exists := cache.Get("a")
-		if exists {
-			t.Error("Entry should not exist")
-		}
-
+	_, ok := cache.Get("https://example.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
 	}
 
+	time.Sleep(waitTime)
+
+	_, ok = cache.Get("https://example.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
 }
