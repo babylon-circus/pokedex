@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-func commandCatch(c *config, args []string) error {
+func commandCatch(c *config, args ...string) error {
 	pokemonName := args[0]
 
 	pokemon, err := c.pokeapiClient.Pokemon(pokemonName)

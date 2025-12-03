@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandExplore(cfg *config, args []string) error {
+func commandExplore(cfg *config, args ...string) error {
 	locationName := args[0]
 
 	locationsAreaResp, err := cfg.pokeapiClient.LocationArea(args[0])
