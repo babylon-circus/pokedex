@@ -28,14 +28,14 @@ func commandCatch(c *config, args ...string) error {
 
 	if shoot < pokemon.BaseExperience {
 		fmt.Printf("%s escaped\n", pokemonName)
-
 		return nil
 	}
 
-	c.caughtPokemon[pokemonName] = pokemon
+	if err := c.pokedex.Catch(pokemon); err != nil {
+		return fmt.Errorf("failed to catch pokemon: %w", err)
+	}
 
 	fmt.Printf("%s was caught!\n", pokemonName)
-
 	return nil
 }
 

@@ -1,54 +1,19 @@
 package pokeapi
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 )
 
 func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
-	url := baseURL + "/location-area"
+	url := c.baseURL + "/location-area"
 	if pageURL != nil {
 		url = *pageURL
 	}
 
-	if val, ok := c.cache.Get(url); ok {
-		locationsResp := RespShallowLocations{}
-		err := json.Unmarshal(val, &locationsResp)
-		if err != nil {
-			return RespShallowLocations{}, err
-		}
-
-		return locationsResp, nil
-	}
-
-	req, err := http.NewRequest("GET", url, nil)
+	locations, err := fetchAndCache[RespShallowLocations](c, url)
 	if err != nil {
-		return RespShallowLocations{}, err
+		return RespShallowLocations{}, fmt.Errorf("failed to list locations: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return RespShallowLocations{}, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	dat, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
-
-	locationsResp := RespShallowLocations{}
-	err = json.Unmarshal(dat, &locationsResp)
-	if err != nil {
-		return RespShallowLocations{}, err
-	}
-
-	c.cache.Add(url, dat)
-	return locationsResp, nil
+	return locations, nil
 }

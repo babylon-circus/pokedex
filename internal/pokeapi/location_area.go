@@ -1,51 +1,16 @@
 package pokeapi
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 )
 
 func (c *Client) LocationArea(id string) (LocationArea, error) {
-	url := baseURL + "/location-area/" + id
+	url := c.baseURL + "/location-area/" + id
 
-	if val, ok := c.cache.Get(url); ok {
-		locationsResp := LocationArea{}
-		err := json.Unmarshal(val, &locationsResp)
-		if err != nil {
-			return LocationArea{}, err
-		}
-
-		return locationsResp, nil
-	}
-
-	req, err := http.NewRequest("GET", url, nil)
+	locationArea, err := fetchAndCache[LocationArea](c, url)
 	if err != nil {
-		return LocationArea{}, err
+		return LocationArea{}, fmt.Errorf("failed to fetch location area %s: %w", id, err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return LocationArea{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return LocationArea{}, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	dat, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return LocationArea{}, err
-	}
-
-	locationsResp := LocationArea{}
-	err = json.Unmarshal(dat, &locationsResp)
-	if err != nil {
-		return LocationArea{}, err
-	}
-
-	c.cache.Add(url, dat)
-	return locationsResp, nil
+	return locationArea, nil
 }

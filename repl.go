@@ -7,13 +7,14 @@ import (
 	"strings"
 
 	pokeapi "github.com/babylon-circus/pokedexcli/internal/pokeapi"
+	"github.com/babylon-circus/pokedexcli/internal/pokedex"
 )
 
 type config struct {
-	pokeapiClient    pokeapi.Client
+	pokeapiClient    pokeapi.APIClient
 	nextLocationsURL *string
 	prevLocationsURL *string
-	caughtPokemon    map[string]pokeapi.Pokemon
+	pokedex          *pokedex.Pokedex
 }
 
 func startRepl(cfg *config) {
