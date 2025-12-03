@@ -1,10 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
 func commandExplore(cfg *config, args ...string) error {
+	if len(args) == 0 {
+		return errors.New("missing location name")
+	}
 	locationName := args[0]
 
 	locationsAreaResp, err := cfg.pokeapiClient.LocationArea(args[0])

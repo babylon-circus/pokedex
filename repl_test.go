@@ -33,13 +33,13 @@ func TestCleanupInput(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		acctual := cleanInput(c.input)
-		if len(acctual) != len(c.expected) {
-			t.Errorf("Length does not match '%v' vs '%v'", acctual, c.expected)
+		actual := cleanInput(c.input)
+		if len(actual) != len(c.expected) {
+			t.Errorf("Length does not match '%v' vs '%v'", actual, c.expected)
 		}
 
-		for i := range acctual {
-			word := acctual[i]
+		for i := range actual {
+			word := actual[i]
 			expected := c.expected[i]
 			if word != expected {
 				t.Errorf("failed")

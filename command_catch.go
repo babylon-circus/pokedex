@@ -1,11 +1,15 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 )
 
 func commandCatch(c *config, args ...string) error {
+	if len(args) == 0 {
+		return errors.New("missing pokemon name")
+	}
 	pokemonName := args[0]
 
 	pokemon, err := c.pokeapiClient.Pokemon(pokemonName)
@@ -23,12 +27,12 @@ func commandCatch(c *config, args ...string) error {
 	shoot := shootPower(pokemon.BaseExperience)
 
 	if shoot < pokemon.BaseExperience {
-		fmt.Printf("%s esacped\n", pokemonName)
+		fmt.Printf("%s escaped\n", pokemonName)
 
 		return nil
 	}
 
-	c.pokemonPrisoned[pokemonName] = pokemon
+	c.caughtPokemon[pokemonName] = pokemon
 
 	fmt.Printf("%s was caught!\n", pokemonName)
 

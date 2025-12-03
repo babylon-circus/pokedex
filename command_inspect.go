@@ -1,9 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func commandInspect(c *config, args ...string) error {
-	pokemon, ok := c.pokemonPrisoned[args[0]]
+	if len(args) == 0 {
+		return errors.New("missing pokemon name")
+	}
+	pokemon, ok := c.caughtPokemon[args[0]]
 	if !ok {
 		fmt.Println("you have not caught that pokemon")
 		return nil

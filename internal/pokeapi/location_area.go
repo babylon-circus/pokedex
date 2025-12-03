@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -29,6 +30,10 @@ func (c *Client) LocationArea(id string) (LocationArea, error) {
 		return LocationArea{}, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return LocationArea{}, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
 
 	dat, err := io.ReadAll(resp.Body)
 	if err != nil {
